@@ -4,7 +4,7 @@
 \title{
 M step of the EM algorithm for fitting  homogeneous multivariate Markov switching auto-regressive models with constraints on VAR models.}
 \description{
-M step of the EM algorithm for fitting   homogeneous multivariate Markov switching auto-regressive models with constraints on VAR models, called in fit.MSAR. Maximum lakilihood. Matrices A and sigma are diagonal by blocks.}
+M step of the EM algorithm for fitting   homogeneous multivariate Markov switching auto-regressive models with constraints on VAR models, called in fit.MSAR. Maximum likelihood is used. Matrices A and sigma are diagonal by blocks.}
 \usage{
 Mstep.hh.MSAR.with.constraints(data, theta, FB, K, d.y)
 }
@@ -41,6 +41,6 @@ Valerie Monbet, valerie.monbet@univ-rennes1.fr
 
 
 \seealso{
-Mstep.hh.MSAR, fit.MSAR
+Mstep.hh.MSAR, fit.MSAR, Mstep.hh.SCAD.MSAR
 }
 

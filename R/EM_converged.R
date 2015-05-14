@@ -6,7 +6,7 @@ function(loglik, previous_loglik, threshold = 1e-4) {
   if(!(previous_loglik==-Inf)){
   if (loglik - previous_loglik < -1e-2) # allow for a little imprecision 
     {
-    print(c("******likelihood decreased from ",previous_loglik," to ", loglik),quote = FALSE)
+    print(paste("******likelihood decreased from ",previous_loglik," to ", loglik,sep=""),quote = FALSE)
     decrease = 1;
     }
 

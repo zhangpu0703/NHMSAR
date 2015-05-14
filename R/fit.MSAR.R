@@ -1,7 +1,7 @@
 fit.MSAR <-
 function(
     data,theta,MaxIter=100,eps=1e-5,verbose=FALSE,
-    covar.emis=NULL,covar.trans=NULL,method=NULL,constraints=FALSE,K=NULL,d.y=NULL,ARfix=FALSE,...
+    covar.emis=NULL,covar.trans=NULL,method=NULL,constraints=FALSE,reduct=FALSE,K=NULL,d.y=NULL,ARfix=FALSE,penalty=FALSE,sigma.diag=FALSE,lambda1=.1,lambda2=.1,...
 ) { 
 	cl <- match.call()
     now <- Sys.time()
@@ -56,6 +56,7 @@ function(
     previous_loglik <- FB$loglik-1000 
     ll_history = NULL
     converged = EM_converged(0,2*eps,eps);
+    par = NULL
     while (converged[1]==0 && cnt < MaxIter) {
     	cnt <- cnt+1
 
@@ -64,15 +65,36 @@ function(
     	# -----------------------------
     	# ...... M step
     	if (label=='HH') {
-    		if (constraints == FALSE) {par = Mstep.hh.MSAR(data,theta,FB) }
-    		else {par = Mstep.hh.MSAR.with.constraints(data,theta,FB,K=K,d.y=d.y) } 		
+    		if (constraints == FALSE & penalty==FALSE & reduct==FALSE) {par = Mstep.hh.MSAR(data,theta,FB) }
+    		else if (constraints){
+    			par = Mstep.hh.MSAR.with.constraints(data,theta,FB,K=K,d.y=d.y) 
+    			attributes(theta)$n_par = M + M*(M-1) + 2*M*d # A and sigma diagonal
+    		} 
+    		# else if (penalty=="LASSO")	{
+    			# if (cnt>1) {
+    				# par = Mstep.hh.reduct.MSAR(data,theta,FB,sigma.diag=sigma.diag)
+    				# # npar = 0
+    				# # for (m in 1:M) {
+    					# # npar = npar+sum(abs(par$A[[m]][[1]])>0)
+    					# # npar = npar+sum(abs(par$sigma[[m]])>0)
+    				# # }
+    				# # attributes(theta)$n_par = npar + M + M*(M-1)
+    			# } 
+    			# else {par = Mstep.hh.lasso.MSAR(data,theta,FB)}
+    		# }
+    		else if (penalty=="SCAD") {
+    			par = Mstep.hh.SCAD.MSAR(data,theta,FB,penalty="SCAD",lambda1=lambda1,lambda2=lambda2,par=par)
+    		}    
+ #   		else if (penalty=="SIS") {
+ #   			par = Mstep.hh.SIS.MSAR#(data,theta,FB,penalty="SCAD",lambda1=lambda1,lambda2=lambda2,par=par)
+ #   		}
+			else if (reduct) {par = Mstep.hh.reduct.MSAR(data,theta,FB,sigma.diag=sigma.diag)}
+
     		if (order>0) {
     	        theta=list(par$A,par$A0,par$sigma,par$prior,par$transmat)
 			} else {
      		    theta=list(par$A0,par$sigma,par$prior,par$transmat)
-			}
-			}         
-          
+			} 		}                 
 		else if (label=='HN') { 
 		    par = Mstep.hn.MSAR(data,theta,FB,covar=covar.emis,verbose=verbose) 
     		if (order>0) {
@@ -83,7 +105,7 @@ function(
              }
 		}
 		else if (label=='NH') { 
-			par = Mstep.nh.MSAR(data,theta,FB,covar=covar.trans,method=method,ARfix=ARfix) 
+			par = Mstep.nh.MSAR(data,theta,FB,covar=covar.trans,method=method,ARfix=ARfix,reduct=reduct,sigma.diag=sigma.diag,penalty=penalty,lambda1=lambda1,lambda2=lambda2,par=par) 
     		if (order>0) {
 		        theta=list(par$A,par$A0,par$sigma,par$prior,par$transmat,par$par.trans)
              }          
@@ -148,8 +170,51 @@ dimnames[[2]]
 		theta = as.thetaMSAR(theta,label=label,ncov.emis = ncov.emis,ncov.trans=ncov.trans)
 		FB$probS = FB$probS[,,i.tr]
 	}
+	#browser()
+    if (penalty!="SCAD" ) {lambda1=rep(0,M)}
+    npar = M*d+M*(M-1)
+    if (substr(label,1,1)=="N") {npar = npar+M*length(theta$par.trans[1,])}
+    if (substr(label,2,2)=="N") {npar = npar+M*length(theta$par.emis[1,])}
+    for (m in 1:M) {
+    	npar = npar+sum(abs(theta$A[[m]][[1]])>0)
+    	if (penalty!="SCAD" | max(abs(lambda1))==0) {npar = npar+sum(abs(theta$sigma[[m]][upper.tri(theta$sigma[[m]],diag=TRUE)])>0)}
+    	else { npar = npar+sum(abs(par$sigma.inv[[m]][upper.tri(par$sigma.inv[[m]],diag=TRUE)])>0)}
+    }
+    attributes(theta)$n_par = npar
+	#}
     BIC = -2*ll_history[cnt]+ attributes(theta)$n_par*log(length(c(data)))
-    res = list(theta=theta,ll_history=ll_history,Iter=cnt,Npar=Npar,BIC=BIC,smoothedprob=FB$probS)
+    ll.pen = NULL
+    if (penalty=="SCAD") {
+    	a = 3.7
+    	if (length(lambda1)==1) {lambda1 = matrix(lambda1,1,M)}
+		if (length(lambda2)==1) {lambda2 = matrix(lambda2,1,M)}
+    	pen = 0
+		for (m in 1:M){
+			w = matrix(0,d,d)
+			if (lambda1[m]>0) {wi = solve(theta$sigma[[m]])
+				abs.S = abs(theta$sigma[[m]])
+				w = lambda1[m]*abs.S
+				wA = which(abs.S>lambda1[m] & abs.S<=a*lambda1[m])
+				w[wA] = -(abs.S[wA]^2-2*a*lambda1[m]*abs.S[wA]+lambda1[m]^2)/2/(a-1)
+				wA = which(abs.S>a*lambda1[m])
+				w[wA] = (a+1)^2*lambda1[m]^2/2
+				w=matrix(w,d,d)
+			}
+			pen = pen+sum((w-diag(diag(w)))*abs(theta$sigma[[m]]))
+			omega = matrix(0,d,d)
+			if (lambda2[m]>0) {abs.A = abs(theta$A[[m]][[1]])
+				omega = lambda2[m]*abs.A
+				wA = which(abs.A>lambda2[m] & abs.A<=a*lambda2[m])
+				omega[wA] = -(abs.A[wA]^2-2*a*lambda2[m]*abs.A[wA]+lambda2[m]^2)/2/(a-1)
+				wA = which(abs.A>a*lambda2[m])
+				omega[wA] = (a+1)^2*lambda2[m]^2/2
+				omega=matrix(omega,d,d)
+			}
+			pen = pen+sum(omega*abs(theta$A[[m]][[1]]))
+		}
+		ll.pen = (FB$loglik-((T-1)*N.samples)*pen)
+	}
+    res = list(theta=theta,ll_history=ll_history,Iter=cnt,Npar=Npar,BIC=BIC,smoothedprob=FB$probS,ll.pen = ll.pen)
     class(res) <- "MSAR"
     res$call = cl
     res

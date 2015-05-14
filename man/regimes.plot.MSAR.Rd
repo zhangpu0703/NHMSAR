@@ -2,10 +2,10 @@
 \alias{regimes.plot.MSAR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Plot MSAR times series with regimes 
+Plot MSAR time series with regimes 
 }
 \description{
- Plot MSAR times series with regimes. }
+ Plot MSAR time series with regimes materialized by gray boxes. }
 \usage{
 regimes.plot.MSAR(res, data, ex = 1, col.l = "red", nc = 1, 
 ylim = NULL, xlab = "time", ylab = "series", d = NULL, dt = 1, lwd = 1)
@@ -29,7 +29,7 @@ range for the plotted 'y' values, defaulting to the range of the finite values o
 a title for the x axis}
   \item{ylab}{
 a title for the y axis}
-  \item{d}{
+  \item{d}{dimension to be plot (for multivariate cases). Default is 1. 
 %%     ~~Describe \code{d} here~~
 }
   \item{dt}{

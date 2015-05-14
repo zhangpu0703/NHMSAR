@@ -36,7 +36,7 @@ function(data,theta,FB,covar=NULL,verbose=FALSE)  {
 	#par_emis=matrix(0,M,dim(as.matrix(theta$par.emis[[1]]))[2])
 	par_emis=matrix(0,M,length(theta$par.emis[[1]]))
 	for (j in 1:M) {
-		par_emis[j,] = as.vector(theta$par.emis[[j]]) # Attention à l'ordre dans lequel c'est rangé...
+		par_emis[j,] = as.vector(theta$par.emis[[j]]) # Attention a l'ordre dans lequel c'est range...
 	}
 	
 	if(d==1){A <- matrix(0,M,order)}

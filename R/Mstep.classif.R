@@ -87,7 +87,7 @@ function(data,C,order)  {
 	LLx = 0 # classification
 	for (i in 1:M){
 		ni = sum(C==i)
-		LLy = LLy-ni*log(det(as.matrix(Sigma[[i]])))
+		LLy = LLy-ni*log(det(as.matrix(sigma[[i]])))
 		for (j in 1:M) {
 			nij = sum(C[1:(T-1),]==i & C[2:(T),]==j)
 			if (nij>0) {LLx = LLx + sum(nij)*log(nij/ni)}
@@ -95,6 +95,6 @@ function(data,C,order)  {
 	}
 	if (M>1) {LL = LLy+LLx}
 	else {LL = LLy}
-	list(A=Atmp,mu=moy,sigma=sigma,LL=LL)
+	list(A=Atmp,A0=moy,sigma=sigma,LL=LL)
 	
 }

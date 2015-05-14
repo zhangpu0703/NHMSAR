@@ -1,5 +1,5 @@
 init.theta.MSAR <-
-function(data,...,M,order,regime_names=NULL,nh.emissions=NULL,nh.transitions=NULL,label=NULL,ncov.emis = 0,ncov.trans=0
+function(data,...,M,order,regime_names=NULL,nh.emissions=NULL,nh.transitions=NULL,label=NULL,ncov.emis = 0,ncov.trans=0,cl.init="mean"
 ) {
 	if (missing(M) || is.null(M) || M==0) {print("Need at least one regime : M=1"); M <- 1 }
 	if (missing(order)) { order <- 0 } # AR order
@@ -14,20 +14,48 @@ function(data,...,M,order,regime_names=NULL,nh.emissions=NULL,nh.transitions=NUL
      if (length(dim(data))<3) {d = 1}
      else {d = dim(data)[3]} 
      
-     d.data = matrix(0,(T-1)*N.samples,d)
-     data.mat = matrix(0,T*N.samples,d)
-     for (id in 1:d) { 
-     	d.data[,id] = c(data[2:T,,id]-data[1:(T-1),,id])
-     	data.mat[,id] = c(data[,,id])
-     }
-     #mc = Mclust(d.data,G=M,modelNames="VVI")
-     #class = mc$classification
-     if (M>1) {mc = kmeans(d.data,centers=d.data[sample(1:dim(d.data)[1],M),])
-	 class = mc$cluster}
-	 else {class = 1}
-     res = Mstep.classif(data,array(class,c(T,N.samples,1)),order=order)
+     
+     if (cl.init == "mean") {
+		 d.data = matrix(0,(T-1)*N.samples,d)
+		 data.mat = matrix(0,T*N.samples,d)
+		 for (id in 1:d) { 
+			 d.data[,id] = c(data[2:T,,id]-data[1:(T-1),,id])
+			 data.mat[,id] = c(data[,,id])
+		 }
+		 if (M>1) {
+		 	centers=d.data[sample(1:dim(d.data)[1],M),] 
+		 	if (any(duplicated(centers))) {
+		 		cnt=0
+		 		while (any(duplicated(centers)) & cnt<5){ 
+		 			cnt = cnt+1
+		 			centers = d.data[sample(1:dim(d.data)[1],M),]
+		 		}
+		 		if (any(duplicated(centers))) {print("Is there a lot of equal data?")}
+		 	}
+			mc = kmeans(d.data,centers=centers)
+			class = mc$cluster
+		 }
+		 else {class = 1}
+	 }
+     else {    
+     	d.var = array(0,c((T-1),N.samples,d))
+		ht = 3
+    	for (id in 1:d) { 
+			for (t in 1:(T-1)) {
+        		ii = max(t-ht,1):min(T-1,t+ht)
+     			d.var[t,,id] = apply(data[ii+1,,id]-data[ii,,id],2,var)    
+     		}
+     	}
+		qv = quantile(d.var,probs=(1:M)/M)
+		d.var = matrix(d.var,(T-1)*N.samples,d)    
+		if (M>1) {
+			mc = kmeans(d.var,centers=d.var[sample(1:dim(d.var)[1],M),])
+			class = mc$cluster
+		}
+	 }
+	 res = Mstep.classif(data,array(class,c(T,N.samples,1)),order=order)
      A = res$A
-     A0 = res$mu
+     A0 = res$A0
      sigma = res$sigma
      
      
@@ -57,7 +85,7 @@ function(data,...,M,order,regime_names=NULL,nh.emissions=NULL,nh.transitions=NUL
      		nh.emissions <- function(covar,par.emis){
      			d <- dim(par.emis)[1]
      			if(is.null(d) || is.na(d)){d <- 1}
-     			f <- matrix(0,d,dim(covar)[1]) # cas où covar est un vecteur?
+     			f <- matrix(0,d,dim(covar)[1]) # if covar is a vector?
      			for(i in 1:d){
      				f[i,] <- par.emis[i,1:dim(par.emis)[2]]%*%t(covar)
      			}
@@ -76,20 +104,19 @@ function(data,...,M,order,regime_names=NULL,nh.emissions=NULL,nh.transitions=NUL
       if (substr(label,1,1)=="N") { 
            par.trans <- array(1,c(M,max(2,ncov.trans+1)))
      	   if (missing(nh.transitions)) { nh.transition = 'gauss'}
-     	   if (!is.function(nh.transitions)){if (nh.transitions=='gauss') {# à voir cas multivarié (27/08/2013)
-     	   		nh.transitions <- function(covar,par.trans,transmat){		
+     	   if (!is.function(nh.transitions)){if (nh.transitions=='gauss') {     	   		nh.transitions <- function(covar,par.trans,transmat){		
   					T <- dim(covar)[1]
   					N.samples = dim(covar)[2]
   					ncov = dim(covar)[3]
   					M = dim(transmat)[1]
   					f <- array(0,c(M,M,T))
+  					p.t = array(0,c(T,N.samples,ncov))
   					for (j in 1:M) {	
-  						xx = (covar-array(par.trans[j,1:ncov],c(T,N.samples,ncov)))^2 
+  						for (nc in 1:ncov) {p.t[,,nc] = par.trans[j,nc]}
+  						xx = (covar-p.t)^2 
   						sxx = apply(xx,1,sum)
   						temp=exp( -.5*sxx/par.trans[j,ncov+1]^2)/par.trans[j,ncov+1]
-  						for (i in 1:M) {
-  							f[i,j,] = transmat[i,j]*temp ;
-  						}  
+  						for (i in 1:M) {f[i,j,] = transmat[i,j]*temp }  
   					}	
   					f.sum = apply(f , c(1,3), sum)
   					for (i in 1:M) {f[i,,] = f[i,,]/t(matrix(f.sum[i,],T,M))}

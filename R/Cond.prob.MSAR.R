@@ -41,8 +41,8 @@ function(data,theta,yrange=NULL,covar.emis=NULL,covar.trans=NULL){
 				alpha[,o] = normalise(tmp)}
 			
 			for (k in 1:lyr) {
-				y[o] = yrange[k] # On remplace la valeur au temps t par le y qui nous intéresse
-    			g = emisprob.MSAR(y,theta,covar.emis[,ex,]) # à optimiser
+				y[o] = yrange[k] # On remplace la valeur au temps t par le y qui nous interesse
+    			g = emisprob.MSAR(y,theta,covar.emis[,ex,]) # a optimiser
     			#
     			if (o>1) {
     				obslik.y[,1:(o-1)] = p1
@@ -51,7 +51,7 @@ function(data,theta,yrange=NULL,covar.emis=NULL,covar.trans=NULL){
     				a = normalise(py[k,])
 				beta = matrix(1,M,1)
 				# BACKWARD .........................................................
-				for (tb in seq(T-1,o,-1)) { # On s'arrête au temps t? 
+				for (tb in seq(T-1,o,-1)) { # On s'arrete au temps t? 
 					b = beta * obslik.y[,tb+1];
 					#beta = normalise((transmat2 %*% b)) #P(Y_t=y|Y_{t+1:T}=y_{t+1:T}) 					
 					beta = normalise((transition[,,tb+1] %*% b)) #P(Y_t=y|Y_{t+1:T}=y_{t+1:T}) 
@@ -75,17 +75,17 @@ function(data,theta,yrange=NULL,covar.emis=NULL,covar.trans=NULL){
 			tmp = tmp1 * obslik[,t]
 			alpha[,t] = normalise(tmp)
     		for (k in 1:lyr) {
-    			y[t] = yrange[k] # On remplace la valeur au temps t par le y qui nous intéresse
-    			g = emisprob.MSAR(y,theta,covar.emis[,ex,]) # à optimiser
+    			y[t] = yrange[k] # On remplace la valeur au temps t par le y qui nous interesse
+    			g = emisprob.MSAR(y,theta,covar.emis[,ex,]) # a optimiser
     			obslik.y[,(order+1):dim(obslik.y)[2]] = g
     			# FORWARD ..............................................................
 				tmp = tmp1 * obslik.y[,t]
 				a = normalise(tmp1)*obslik.y[,t] #P(Y_t=y|Y_{1:t-1}=y_{1:t-1},S) 
-#a[k,t,ex] = sum(tmp) # On doit trouver la même chose dans le code forecast	
+#a[k,t,ex] = sum(tmp) # On doit trouver la meme chose dans le code forecast	
 				beta = matrix(0,M,T) 
 				beta[,T] = matrix(1,M,1)
 				# BACKWARD .........................................................
-				for (tb in seq(T-1,t,-1)) { # On s'arrête au temps t? 
+				for (tb in seq(T-1,t,-1)) { # On s'arrete au temps t? 
 					b = beta[,tb+1] * obslik.y[,tb+1];
 					beta[,tb] = normalise((transition[,,tb+1] %*% b)) #P(Y_t=y|Y_{t+1:T}=y_{t+1:T}) 
 				}

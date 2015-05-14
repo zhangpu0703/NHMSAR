@@ -6,7 +6,9 @@ M step of the EM algorithm.}
 \description{
 M step of the EM algorithm for fitting Markov switching auto-regressive models with non homogeneous transitions.}
 \usage{
-Mstep.nh.MSAR(data, theta, FB, covar = NULL, method = method,ARfix=FALSE)
+Mstep.nh.MSAR(data,theta,FB,covar=NULL,method=method,
+ARfix=FALSE,reduct=FALSE,penalty=FALSE,sigma.diag=FALSE,
+lambda1=lambda1,lambda2=lambda2,par = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,8 +26,16 @@ Forward-Backward results, obtained by calling Estep.MSAR function}
 transitions covariates}
   \item{method}{
 permits to choice the optimization algorithm. default is "ucminf", other possible choices are "BFGS" or "L-BFGS-B"}
+\item{sigma.diag}{if TRUE the innovation covariance matrices are diagonal.}
+\item{reduct}{if TRUE, autoregressive matrices and innovation covariance matrices are constrained to have the same pattern (zero and non zero coefficients) as the one of initial matrices.   }
  \item{ARfix}{
 if TRUE the AR parameters are not estimated, they stay fixed at their initial value. }
+  \item{lambda1}{
+penalization constant for the precision matrices. It may be a scalar or a vector of length M (with M the number of regimes). If it is equal to0 no penalization is introduced for the precision matrices. }
+  \item{lambda2}{
+penalization constant for the autoregressive matrices. It may be a scalar or a vector of length M (with M the number of regimes).  If it is equal to0 no penalization is introduced for the atoregression matrices.}
+\item{penalty}{choice of the penalty for the autoregressive matrices. Possible values are ridge, lasso or SCAD (default). }
+\item{par}{allows to give an initial value to the precision matrices. }
 }
 
 \value{

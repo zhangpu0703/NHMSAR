@@ -43,7 +43,7 @@ function(data,...,M,order,regime_names=NULL,nh.emissions=NULL,nh.transitions=NUL
      		nh.emissions <- function(covar,par.emis){
      			d <- dim(par.emis)[1]
      			if(is.null(d) || is.na(d)){d <- 1}
-     			f <- matrix(0,d,dim(covar)[1]) # cas où covar est un vecteur?
+     			f <- matrix(0,d,dim(covar)[1]) # if covar is a vecteur?
      			for(i in 1:d){
      				f[i,] <- par.emis[i,1:dim(par.emis)[2]]%*%t(covar)
      			}
@@ -81,7 +81,7 @@ function(data,...,M,order,regime_names=NULL,nh.emissions=NULL,nh.transitions=NUL
   					for (i in 1:M) {f[i,,] = f[i,,]/t(matrix(f.sum[i,],T,M))}
  					return(f)
 				}
-			} else if (nh.transitions=='gauss') {# à voir cas multivarié (27/08/2013)
+			} else if (nh.transitions=='gauss') {
      	   		nh.transitions <- function(covar,par.trans,transmat){		
   					T <- dim(covar)[1]
   					N.samples = dim(covar)[2]

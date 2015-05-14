@@ -7,7 +7,8 @@ Simulation of (non) homogeneous Markov Stiwtching autoregressive models
 \description{
 simule.nh.MSAR simulates realisations of (non) homogeneous Markov Switching autoregressive models with Gaussian innovations}
 \usage{
-simule.nh.MSAR(theta, Y0, T, N.samples = 1, covar.emis = NULL, covar.trans = NULL)
+simule.nh.MSAR(theta, Y0, T, N.samples = 1, covar.emis = NULL, covar.trans = NULL,
+link.ct = NULL,nc = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,9 +28,12 @@ list of class MSAR including model parameters and a description of the model. Se
   \item{covar.emis}{ emission covariate or lag for non homogeneous models. Lag is used if the covariate is the lagged time series.
 %%     ~~Describe \code{covar.emis} here~~
 }
-  \item{covar.trans}{transition covariate or lag for non homogeneous models. Lag is used if the covariate is the lagged time series.
-%%     ~~Describe \code{covar.trans} here~~
-}
+  \item{covar.trans}{transition covariate or lag for non homogeneous models. Lag is used if the covariate is the lagged time series.}
+  \item{link.ct}{allows to specify a link function for non homogeneous transitions.  
+  	}
+  	  \item{nc}{allows to specify the components of the oberation vector to be considered as covariates  in the non homogeneous transitions   (default is the first component).
+  	}
+
 }
 
 \value{List including

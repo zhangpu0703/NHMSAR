@@ -1,5 +1,5 @@
 Mstep.nh.MSAR <-
-function(data,theta,FB,covar=NULL,method=method,ARfix=FALSE)  {  
+function(data,theta,FB,covar=NULL,method=method,ARfix=FALSE,reduct=FALSE,penalty=FALSE,sigma.diag=FALSE,lambda1=lambda1,lambda2=lambda2,par = NULL)  {  
 	
 	  order=attributes(theta)$order
 	  d=dim(data)[3]
@@ -14,7 +14,10 @@ function(data,theta,FB,covar=NULL,method=method,ARfix=FALSE)  {
 
 	  N.samples = dim(covar)[2]
 	  ncov.trans = dim(covar)[3]
-      if (!ARfix) {par.hh = Mstep.hh.MSAR(data,theta,FB)}
+      if (!ARfix & !reduct & penalty==FALSE) {par.hh = Mstep.hh.MSAR(data,theta,FB)}
+      else if (reduct) {par.hh = Mstep.hh.reduct.MSAR(data,theta,FB,sigma.diag=sigma.diag)}
+      else if (penalty=="SCAD") { par.hh = Mstep.hh.SCAD.MSAR(data,theta,FB,penalty=penalty,lambda1=lambda1,lambda2=lambda2,par=par)
+    		}
       else {
       	par.hh = NULL
       	par.hh$A=theta$A
@@ -42,8 +45,8 @@ function(data,theta,FB,covar=NULL,method=method,ARfix=FALSE)  {
       transmat=para_trans_inv(trans);
 
      if (order>0) {
-	    list(A=par.hh$A,sigma=par.hh$sigma,A0=par.hh$A0,prior=par.hh$prior,transmat=transmat,par.trans=par.trans)
+	    list(A=par.hh$A,sigma=par.hh$sigma,A0=par.hh$A0,prior=par.hh$prior,transmat=transmat,par.trans=par.trans,sigma.inv=par.hh$sigma.inv)
 	 } else {
-		list(sigma=par.hh$sigma,A0=par.hh$A0,prior=par.hh$prior,transmat=transmat,par.trans=par.trans)
+		list(sigma=par.hh$sigma,A0=par.hh$A0,prior=par.hh$prior,transmat=transmat,par.trans=par.trans,sigma.inv=par.hh$sigma.inv)
 	 }
 }

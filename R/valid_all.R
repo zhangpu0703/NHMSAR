@@ -1,12 +1,12 @@
 valid_all <-
-function(data,simu,root.filename=" ",path=NULL,title="",id=1,alpha=.05,save=FALSE){
+function(data,simu,root.filename=" ",path=NULL,title="",id=1,alpha=.05,save=FALSE,output=FALSE){
 
 dev.new()
+T = dim(data)[1]
 N.samples = dim(data)[2]
 N.sim = dim(simu)[2]
 Bsim = N.sim/N.samples
-id = 1 ; 
-qqplot(data[,,id],simu[,,id],pch=20,xlab='Observations',ylab='Simulations',cex=.6)
+qqp = qqplot(data[,,id],simu[,,id],pch=20,xlab='Observations',ylab='Simulations',cex=.6)
 title(title)
 abline(a=0,b=1)
 q = matrix(0,Bsim,length(data[,,1]))
@@ -24,7 +24,7 @@ if (save) {
 	dev.copy2eps(file=filename,width=4,height=4)
 }
 dev.new()
-C = cor.MSAR(data,simu,lag=15)
+C = cor.MSAR(array(data[,,id],c(T,N.samples,1)),array(simu[,,id],c(T,N.sim,1)),lag=15)
 plot(0:14,C$C.data,typ="l",ylab="Correlation",xlab="Time (days)",lwd=2)
 title(title)
 lines(0:14,C$C.sim,col="red")
@@ -35,24 +35,26 @@ if (save) {
 	dev.copy2eps(file=filename,width=4,height=4)
 }
 dev.new()
-u = seq(min(data),max(data),by=.3)
-gr.d = ENu_graph(data,u)
-gr = ENu_graph(simu,u,add=TRUE,col=2,CI = TRUE,N.s.data=dim(data)[2])
+u = seq(min(data[,,id]),max(data[,,id]),length.out=20)
+gr.d = ENu_graph(data[,,id],u)
+u = seq(min(simu[,,id]),max(simu[,,id]),length.out=50)
+gr = ENu_graph(simu[,,id],u,add=TRUE,col=2,CI = TRUE,N.s.data=dim(data)[2])
 abline(v=.5,lty=2)
 if (save) {
 	filename = paste(path,"ENu-",root.filename,".eps",sep="")
 	dev.copy2eps(file=filename,width=4,height=4)
 }
 dev.new()
-MDO = MeanDurOver(data,simu,u)
+MDO = MeanDurOver(array(data[,,id],c(T,N.samples,1)),array(simu[,,id],c(T,N.sim,1)),u)
 if (save) {
 	filename = paste(path,"MeanDurOver-",root.filename,".eps",sep="")
 	dev.copy2eps(file=filename,width=4,height=4)
 }
 dev.new()
-MDU = MeanDurUnder(data,simu,u)
+MDU = MeanDurUnder(array(data[,,id],c(T,N.samples,1)),array(simu[,,id],c(T,N.sim,1)),u)
 if (save) {
 	filename = paste(path,"MeanDurUnder-",root.filename,".eps",sep="")
 	dev.copy2eps(file=filename,width=4,height=4)
 }
+if (output) {return(list(qqp=qqp,C=C,ENu.data=gr.d,ENu.simu=gr,MDO=MDO,MDU=MDU ))}
 }

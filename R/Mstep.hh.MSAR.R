@@ -55,6 +55,7 @@ function(data,theta,FB)  {
         moy <- array(0,c(M,d))
         Sigma <- array(0,c(d,d,M))
 		A2 <-array(0,c(M,order,d^2))
+				
 		if (p>0) {																		
 		   for (j in 1:M) { 
 			   Cxx = postmix[j]*op[,,j] - m[,j]%*%t(m[,j])

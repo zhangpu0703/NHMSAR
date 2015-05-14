@@ -7,7 +7,7 @@ Empirical correlation functions comparison .}
 Empirical correlation function of observed data and simulated data are plotted on the same figure. A fluctuation interval of simulations is added to help the comparison. %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-cor.MSAR(data, data.sim, lag = NULL, nc = 1, alpha = 0.05)
+cor.MSAR(data, data.sim, lag = NULL, nc = 1, alpha = 0.05,plot=FALSE,xlab="Time (days)")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,6 +23,8 @@ maximum lag at which to calculate the empirical auto-correlation function. Defau
 number of component for which to calculate the empirical auto-correlation function. }
   \item{alpha}{
 confidence level for computation of the fluctuation interval. Default= 0.05.}
+  \item{plot}{if plot is TRUE plots are drawn (default is FALSE).}
+  \item{xlab}{x axis label}
 }
 \details{The auto-correlation functions are computed from one or several independent realizations of the same length. 
 }

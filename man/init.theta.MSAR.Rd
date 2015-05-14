@@ -7,7 +7,7 @@ Initialisation function for MSAR model fitting}
 Initialization before fitting (non) homogeneous Markov switching autoregressive models by EM algorithm. Non homogeneity may be introduce at the intercept level or in the probability transitions. The link functions are defined here.}
 \usage{
 init.theta.MSAR(data, ..., M, order, regime_names = NULL, nh.emissions = NULL, 
-nh.transitions = NULL, label = NULL, ncov.emis = 0, ncov.trans = 0)
+nh.transitions = NULL, label = NULL, ncov.emis = 0, ncov.trans = 0,cl.init="mean")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -36,6 +36,7 @@ number of covariates in HN model}
   \item{ncov.trans}{
 number of covariates in NH model
 }
+\item{cl.init}{allows to choose the initialization method. }
  \item{\dots}{
 %%     ~~Describe \code{\dots} here~~
 }

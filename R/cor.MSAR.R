@@ -1,5 +1,5 @@
 cor.MSAR <-
-function(data,data.sim,lag=NULL,nc=1,alpha=.05) {
+function(data,data.sim,lag=NULL,nc=1,alpha=.05,plot=FALSE,xlab="Time (days)") {
 	N.s = dim(data)[2]
 	N.sim = dim(data.sim)[2]
 	N = floor(N.sim/N.s)
@@ -23,5 +23,12 @@ function(data,data.sim,lag=NULL,nc=1,alpha=.05) {
 		IC[,l] = quantile(C.sim[l,],probs=c(alpha/2,1-alpha/2))
 	}
 	C.sim = apply(C.sim,1,mean)
+	if (plot) {
+		plot(0:(lag-1),C.data,typ="l",ylab="Correlation",xlab=xlab,lwd=2)
+		lines(0:(lag-1),C.sim,col="red")
+		lines(0:(lag-1),IC[1,],col="red",lty=3)
+		lines(0:(lag-1),IC[2,],col="red",lty=3)
+	}
+
 	return(list(C.data=C.data,C.sim=C.sim,CI.sim=IC,lags=0:(lag-1)))
 }

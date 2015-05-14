@@ -37,7 +37,7 @@ function(res,data,ex=1,col.l="red",nc=1,ylim=NULL,xlab="time",ylab="series",d=NU
 		polygon(c(1,T,T,1,NA), c(ylim[1], ylim[1], ylim[2], ylim[2], NA), col = col[Reg[2]], border = NA, lwd = 3)
 	}	
 	d <- attributes(res$theta)$NbComp
-	if (d==1) {lines((0:(T-1))*dt,data[,ex,],typ="l",col=col.l,lwd=lwd)}
-	else {lines((0:(T-1))*dt,data[,ex,nc],typ="l",col=col.l,lwd=lwd)}
+	if (d==1) {lines((1:(T))*dt,data[,ex,],typ="l",col=col.l,lwd=lwd)}
+	else {lines((1:(T))*dt,data[,ex,nc],typ="l",col=col.l,lwd=lwd)}
 	return(Reg)
 }

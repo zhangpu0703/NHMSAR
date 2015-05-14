@@ -1,5 +1,5 @@
 simule.nh.MSAR <-
-function(theta,Y0,T,N.samples = 1,covar.emis=NULL,covar.trans=NULL) {
+function(theta,Y0,T,N.samples = 1,covar.emis=NULL,covar.trans=NULL,link.ct = NULL,nc=1) {
 	# If length(covar)==1, covar is built from Y with delay covar
 #	if (!inherits(res, "MSAR")) 
 #        stop("use only with \"MSAR\" objects")
@@ -50,6 +50,8 @@ if (substr(label,2,2) == "N") {
 	}	
 }
 
+d.c = length(nc)
+
 if(order>0){
 	A = theta$A
 	}
@@ -59,25 +61,35 @@ if (d>1) {
 	for(i in 1:M){
 		sq_sigma[[i]] = chol(sigma[[i]])
 	}
+} else
+{   sq_sigma = sqrt(sigma)
+	A = list()
+	for (m in 1:M) {
+		A[[m]] = list()
+		for (o in 1:order) {A[[m]][[o]] = theta$A[m,o]}}
 }
 for (ex in 1:N.samples){
-if(d==1){
-    mean = 0
-	for(t in max(c(2,order+1,L+1)):(T)){
-		if (substr(label,1,1) == "N" & length(covar.trans)==1) {
-			transition[,,t,ex] = nh_transitions(array(Y[t-L,ex,],c(1,1,1)),theta$par.trans,theta$transmat)
-		}
-		S[t,ex] = which.max(rmultinom(1, size = 1, prob = transition[S[t-1,ex], ,t,ex]))
-		if(order>0){
-			Y[t,ex,] = A[S[t],]%*%matrix(Y[(t-1):(t-order),ex,])
-		}
-		Y[t,ex,] = Y[t,ex,] + A0[S[t]] +f.emis[t,S[t,ex],] + sqrt(sigma[S[t,ex]])*rnorm(1)
-	}
-}
-else{ # d>1
+# if(d==1){
+    # mean = 0
+	# for(t in max(c(2,order+1,L+1)):(T)){
+		# if (substr(label,1,1) == "N" & length(covar.trans)==1) {
+			
+			# transition[,,t,ex] = nh_transitions(array(Y[t-L,ex,],c(1,1,1)),theta$par.trans,theta$transmat)
+		# }
+		# S[t,ex] = which.max(rmultinom(1, size = 1, prob = transition[S[t-1,ex], ,t,ex]))
+		# if(order>0){
+			# Y[t,ex,] = A[S[t],]%*%matrix(Y[(t-1):(t-order),ex,])
+		# }
+		# Y[t,ex,] = Y[t,ex,] + A0[S[t]] +f.emis[t,S[t,ex],] + sqrt(sigma[S[t,ex]])*rnorm(1)
+	# }
+# }
+# else{ # d>1
 	for (t in max(c(2,order+1,L+1)):(T)){
 		if (substr(label,1,1) == "N" & length(covar.trans)==1) {
-			transition[,,t] = nh_transitions(matrix(Y[t-L,ex,],1,d),theta$par.trans,theta$transmat)
+			if (is.null(link.ct)) {z = array(Y[t-L,ex,nc],c(1,1,d.c))}
+			else {z = link.ct(array(Y[t-L,ex,nc],c(1,1,d.c)))
+				z = matrix(z,1,length(z))}
+			transition[,,t,ex] = nh_transitions(z,theta$par.trans,theta$transmat)
 		}
 		S[t,ex] = which.max(rmultinom(1, size = 1, prob = transition[S[t-1,ex], ,t,ex]))
 		if(order>0){
@@ -88,7 +100,7 @@ else{ # d>1
 		Y[t,ex,] = Y[t,ex,] + A0[S[t,ex],] +  f.emis[t,S[t,ex],] + t(t(sq_sigma[[S[t,ex]]])%*%matrix(rnorm(d),d,1))
 		
 	}
-}
+#}
 }
 return(list(S=S,Y=Y))
 

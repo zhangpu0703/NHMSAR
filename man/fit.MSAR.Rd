@@ -9,7 +9,9 @@ Fit (non) homogeneous Markov switching autoregressive models by EM algorithm. No
 \usage{
 fit.MSAR(data, theta, MaxIter = 100, eps = 1e-05, verbose = FALSE, 
    covar.emis = NULL, covar.trans = NULL, method = NULL, 
-   constraints = FALSE, K = NULL, d.y = NULL, ARfix = FALSE,...)
+   constraints = FALSE, reduct=FALSE, K = NULL, d.y = NULL, 
+   ARfix = FALSE,penalty=FALSE,sigma.diag=FALSE,
+   lambda1=.1,lambda2=.1,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -42,6 +44,14 @@ number of sites. For instance, if one considers wind at k locations, K=k. Or mor
   \item{d.y}{
 dimension in each sites. For instance, if one considers only wind intensity than d.y = 1; but, if one considers cartesian components of wind, then d.y =2.}
 \item{ARfix}{if TRUE the AR parameters are not estimated, they stay fixed at their initial value.}
+\item{reduct}{if TRUE, autoregressive matrices and innovation covariance matrices are constrained to have the same pattern (zero and non zero coefficients) as the one of initial matrices.   }
+\item{sigma.diag}{if TRUE the estimated innovation covariances are diagonal}
+\item{penalty}{choice of the penalty for the autoregressive matrices. Possible values are ridge, lasso or SCAD (default). }
+ \item{lambda1}{
+penalization constant for the precision matrices. It may be a scalar or a vector of length M (with M the number of regimes). If it is equal to0 no penalization is introduced for the precision matrices. }
+  \item{lambda2}{
+penalization constant for the autoregressive matrices. It may be a scalar or a vector of length M (with M the number of regimes). }
+
  \item{...}{other arguments}
 
 }
@@ -75,10 +85,19 @@ Returns a list including:
 \item{..$Npar}{number of parameters in the model}
 \item{..$BIC}{Bayes Information Criterion}
 \item{..$smoothedprob}{smoothing probabilities \eqn{P(X_t|y_0,\cdots,y_T)}}
+
+
+Penalized likelihood is considered if at least one of the lambdas parameters are non zero. When LASSO penalty is chosen, the LARS algorithm is used. When SCAD is chosen, a Newton-Raphson algorithm is run with a quadratic approximation of the penalized likelihood. 
+	For the precision matrices penalization, the package glasso is used. 
+Limit of this function: likelihood penalization only works for VAR(1) models
 }
 \references{
+	Ailliot P., Monbet V., (2012), Markov-switching autoregressive models for wind time series. Environmental Modelling & Software, 30, pp 92-101. 
+	Efron, B., Hastie, T., Johnstone, I., Tibshirani, R., et al. (2004). Least angle regression. The Annals of statistics, 32(2):407-499.
+
+Fan, J. and Li, R. (2001). Variable selection via nonconcave penalized likelihood and its oracle properties. Journal of the American statistical Association, 96(456):1348-1360. 
 	Hamilton J.D. (1989). A New Approach to the Economic Analysis of Nonstionary Time Series and the Business Cycle. Econometrica 57: 357-384.
-Ailliot P., Monbet V., (2012), Markov-switching autoregressive models for wind time series. Environmental Modelling & Software, 30, pp 92-101. }
+}
 \author{
 Valerie Monbet, valerie.monbet at univ-rennes1.fr}
 
