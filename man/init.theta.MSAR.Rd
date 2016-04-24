@@ -29,7 +29,7 @@ order of AR processes}
   \item{nh.emissions}{
 link function for non homogeneous emissions. If nh.emissions="linear" (default) linear link is used. If you define an other function it should follow the sample nh.emissions <- function(covar,par.emis) with par.emis of dimension M by ncov.emis+1.   }
   \item{nh.transitions}{
-link function for non homogeneous transitions. If nh.transitions="gauss" (default) gaussian link is used. If M=2, "logit" may be chosen. If you define an other function it should follow the sample nh.transitions <- function(covar,par.trans,transma) with par.emis of dimension M by ncov.trans+1.  }
+link function for non homogeneous transitions. If nh.transitions="gauss" (default) gaussian link is used. If M=2, "logistic" may be chosen. If you define an other function it should follow the sample nh.transitions <- function(covar,par.trans,transma) with par.emis of dimension M by ncov.trans+1.  }
 
   \item{ncov.emis}{
 number of covariates in HN model}

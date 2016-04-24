@@ -1,6 +1,7 @@
 emisprob.MSAR <-
 function(data,theta,covar=NULL) {
 	
+	w = NULL
 	d <- attributes(theta)$NbComp
 	M <- attributes(theta)$NbRegimes
 	order <- attributes(theta)$order
@@ -28,7 +29,7 @@ function(data,theta,covar=NULL) {
 #			par.emis = theta$par.emis
 #		}
 	T <- dim(as.matrix(data))[1]
-	prob <- matrix(0,T-order,M)
+	prob <- matrix(1,T-order,M)
 	for (j in 1:M) {
 	  	A0.emis = array(0,c(d,T-order))
 		if (order>0) {
@@ -53,7 +54,11 @@ function(data,theta,covar=NULL) {
 				A0.emis[i,]=A0.emis[i,]+femis[i,]	
 			}
 		}
-		prob[,j] = pdf.norm(t(data[(order+1):T,]),A0.emis,matrix(Sigma[[j]],d,d))
+		if (!is.na(sum(data))){prob[,j] = pdf.norm(t(data[((order+1):T),]),A0.emis,matrix(Sigma[[j]],d,d))}
+		else {
+			moy = t(data[((order+1):T),])-A0.emis
+			w = which(is.na(apply(moy,2,sum)))
+			prob[-w,j] = pdf.norm(matrix(moy[,-w],d,T-order-length(w)),0,matrix(Sigma[[j]],d,d))}
    	}
     prob = t(prob)
     prob

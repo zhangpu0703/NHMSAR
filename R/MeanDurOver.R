@@ -1,5 +1,5 @@
 MeanDurOver <-
-function(data,data.sim,u,alpha=.05){
+function(data,data.sim,u,alpha=.05,col="red"){
 N.samples = dim(data)[2]
 Bsim =  dim(data.sim)[2]/N.samples
 tps.data = NULL
@@ -34,9 +34,9 @@ for (k in 1:length(u)) {
 tps.hh= apply(q.tps.hh,2,mean)
 
 plot(F,tps.data,typ="l",ylim=range(c(tps.data,tps.hh)),log="y",lwd=3,xlab = "P(Y<u)",ylab="Mean sojourn duration over u (log scale)")
-lines(Fhh,tps.hh,col="red")
-lines(Fhh,ICinf.hh,col="red",lty=2)
-lines(Fhh,ICsup.hh,col="red",lty=2)
+lines(Fhh,tps.hh,col=col)
+lines(Fhh,ICinf.hh,col=col,lty=2)
+lines(Fhh,ICsup.hh,col=col,lty=2)
 CI = matrix(0,length(u),2)
 CI[,1] = ICinf.hh
 CI[,2] = ICsup.hh

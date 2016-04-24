@@ -1,5 +1,5 @@
 cross.cor.MSAR <-
-function(data,X=NULL,nc1=1,nc2=2,lag=10,regime=0,CI = FALSE,Bsim=0,N.samples=1,add=FALSE,col=1,names = NULL,alpha=.1) {
+function(data,X=NULL,nc1=1,nc2=2,lag=10,regime=0,CI = FALSE,Bsim=0,N.samples=1,add=FALSE,col=1,names = NULL,alpha=.1,ylab="Cross-Correlation") {
 	if (is.null(X)) {X = 0*data[,,1]+1}
 	m1 = mean(data[,,nc1][X!=regime])
 	sd1 = sd(data[,,nc1][X!=regime])
@@ -38,7 +38,7 @@ function(data,X=NULL,nc1=1,nc2=2,lag=10,regime=0,CI = FALSE,Bsim=0,N.samples=1,a
 			}}
 	}
 	if (add==FALSE) {
-		plot(-lag:lag,s.cc/n.obs/sd1/sd2,typ="l",ylab="Cross-Correlation",xlab="Lag (day)",ylim=c(-.1,1),col=col)
+		plot(-lag:lag,s.cc/n.obs/sd1/sd2,typ="l",ylab=ylab,xlab="Lag (day)",ylim=c(-.1,1),col=col,lwd=2)
 		grid()
 		if (!is.null(names)){title(paste(names[nc1],", ",names[nc2],sep=""))}
 	} else {

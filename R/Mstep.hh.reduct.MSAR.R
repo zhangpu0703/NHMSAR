@@ -36,9 +36,14 @@ function(data,theta,FB,sigma.diag=FALSE)  {
 		   	w = matrix(gamma[,j], 1,T-1)
  		    wobs = obs[1:(T-1),] * repmat(t(w),1,d*order)
             wobs_1= obs[2:T,] * repmat(t(w),1,d*order)
+            if (is.na(sum(obs))) {
+            	wobs[is.na(wobs)] = 0
+            	wobs_1[is.na(wobs_1)] = 0
+            	obs[is.na(obs)] = 0
+            }
             m[,j] = m[,j] + apply(wobs,2,sum)
             m_1[,j] = m_1[,j] + apply(wobs_1, 2,sum)
-            op[,,j] = op[,,j] + t(wobs) %*% obs[1:T-1,]
+            op[,,j] = op[,,j] + t(wobs) %*% obs[1:(T-1),]
             op_1[,,j] = op_1[,,j] + t(wobs) %*% obs[2:T,]
             op_2[,,j] = op_2[,,j] + t(wobs_1) %*% obs[2:T,]
          }

@@ -1,7 +1,7 @@
 fit.MSAR <-
 function(
     data,theta,MaxIter=100,eps=1e-5,verbose=FALSE,
-    covar.emis=NULL,covar.trans=NULL,method=NULL,constraints=FALSE,reduct=FALSE,K=NULL,d.y=NULL,ARfix=FALSE,penalty=FALSE,sigma.diag=FALSE,lambda1=.1,lambda2=.1,...
+covar.emis=NULL,covar.trans=NULL,method=NULL,constraints=FALSE,reduct=FALSE,K=NULL,d.y=NULL,ARfix=FALSE,penalty=FALSE,sigma.diag=FALSE,lambda1=.1,lambda2=.1,a=3.7,...
 ) { 
 	cl <- match.call()
     now <- Sys.time()
@@ -70,18 +70,16 @@ function(
     			par = Mstep.hh.MSAR.with.constraints(data,theta,FB,K=K,d.y=d.y) 
     			attributes(theta)$n_par = M + M*(M-1) + 2*M*d # A and sigma diagonal
     		} 
-    		# else if (penalty=="LASSO")	{
-    			# if (cnt>1) {
-    				# par = Mstep.hh.reduct.MSAR(data,theta,FB,sigma.diag=sigma.diag)
-    				# # npar = 0
-    				# # for (m in 1:M) {
-    					# # npar = npar+sum(abs(par$A[[m]][[1]])>0)
-    					# # npar = npar+sum(abs(par$sigma[[m]])>0)
-    				# # }
-    				# # attributes(theta)$n_par = npar + M + M*(M-1)
-    			# } 
-    			# else {par = Mstep.hh.lasso.MSAR(data,theta,FB)}
-    		# }
+    		else if (penalty=="ridge")	{
+     			par = Mstep.hh.SCAD.cw.MSAR(data,theta,FB,penalty="ridge",lambda1=0,lambda2=lambda2,par=par)
+   			#par = Mstep.hh.ridge.MSAR(data,theta,FB,lambda=lambda2)
+			}
+    		else if (penalty=="LASSO")	{
+    			 if (cnt>1) {
+    				 par = Mstep.hh.reduct.MSAR(data,theta,FB,sigma.diag=sigma.diag)
+    			 } 
+    			 else {par = Mstep.hh.lasso.MSAR(data,theta,FB)}
+    		}
     		else if (penalty=="SCAD") {
     			par = Mstep.hh.SCAD.MSAR(data,theta,FB,penalty="SCAD",lambda1=lambda1,lambda2=lambda2,par=par)
     		}    
@@ -178,14 +176,14 @@ dimnames[[2]]
     for (m in 1:M) {
     	npar = npar+sum(abs(theta$A[[m]][[1]])>0)
     	if (penalty!="SCAD" | max(abs(lambda1))==0) {npar = npar+sum(abs(theta$sigma[[m]][upper.tri(theta$sigma[[m]],diag=TRUE)])>0)}
-    	else { npar = npar+sum(abs(par$sigma.inv[[m]][upper.tri(par$sigma.inv[[m]],diag=TRUE)])>0)}
+    	else { npar = npar+sum(abs(par$sigma.inv[[m]][upper.tri(par$sigma.inv[[m]],diag=TRUE)])>1e-5)} # 1e-5 : arbitrary level... 
     }
     attributes(theta)$n_par = npar
 	#}
     BIC = -2*ll_history[cnt]+ attributes(theta)$n_par*log(length(c(data)))
     ll.pen = NULL
     if (penalty=="SCAD") {
-    	a = 3.7
+    	a=3.7
     	if (length(lambda1)==1) {lambda1 = matrix(lambda1,1,M)}
 		if (length(lambda2)==1) {lambda2 = matrix(lambda2,1,M)}
     	pen = 0
@@ -202,7 +200,8 @@ dimnames[[2]]
 			}
 			pen = pen+sum((w-diag(diag(w)))*abs(theta$sigma[[m]]))
 			omega = matrix(0,d,d)
-			if (lambda2[m]>0) {abs.A = abs(theta$A[[m]][[1]])
+			if (lambda2[m]>0) {
+				abs.A = abs(theta$A[[m]][[1]])
 				omega = lambda2[m]*abs.A
 				wA = which(abs.A>lambda2[m] & abs.A<=a*lambda2[m])
 				omega[wA] = -(abs.A[wA]^2-2*a*lambda2[m]*abs.A[wA]+lambda2[m]^2)/2/(a-1)

@@ -8,7 +8,18 @@ function(data,theta,covar.emis=NULL,covar.trans=NULL,ex=1){
 	T = dim(data)[1]
 	N.samples = dim(data)[2]
 	d = dim(data)[3]
-	y.p = array(data[,ex,],c(T,length(ex),1))
+	if (d>1) {A=theta$A}
+	else {
+		A = list()
+		for (m in 1:M) {
+			A[[m]] = list()
+			for (o in 1:order) { 
+				A[[m]][[o]] = theta$A[m,o]
+			}
+		}
+	}
+	y.p = array(data[,ex,],c(T,length(ex),d))
+	var.p = array(0,c(T,length(ex),d,d))
 	Lag = 0
     if (substr(label,1,1) == "N" & length(covar.trans)==1) {
     	Lag = covar.trans+1
@@ -17,6 +28,7 @@ function(data,theta,covar.emis=NULL,covar.trans=NULL,ex=1){
     	T=T-1
     }	
 	#browser()
+	pr = array(0,c(T,M,N.samples))
 	for (iex in 1:length(ex)) {
 		g <- emisprob.MSAR(data[,ex[iex],],theta=theta,covar=covar.emis[,ex[iex],])
 		if (substr(label,1,1) == "H") {
@@ -43,21 +55,23 @@ function(data,theta,covar.emis=NULL,covar.trans=NULL,ex=1){
             transitions = ct 
 		}
 		for (t in (order+2):(T)) {
-			pr = t(matrix(alpha[,t-1]))%*%transitions[,,t] # P(S_t = s|y_{1:(t-1)})
-			y.p[t,ex[iex],1] = 0
+			pr[t,,iex] = t(matrix(alpha[,t-1]))%*%transitions[,,t] # P(S_t = s|y_{1:(t-1)})
+			y.p[t,iex, ] = 0
+			var.p[t,iex,,] =  0*theta$sigma[[1]]# same size as sigma, case d=1 ?
 			for (m in 1:M) {
-				A0.m = theta$A0[m]
+				var.p[t,iex,,] = var.p[t,iex,,]+pr[t,,iex]*theta$sigma[[m]]
+				A0.m = theta$A0[m,]
 				if (substr(label,2,2)=="N") {
 					A0.m = A0.m+attributes(theta)$nh.emissions(matrix(covar.emis[t,ex[iex],],1,dim(covar.emis)[3]),as.matrix(theta$par.emis[[m]]))
 				} 
 				y.hat = A0.m
 				if (order>0) {
 					for (o in 1:order) {
-						y.hat = y.hat+theta$A[m,o]*data[t-o,ex[iex],1] 					}
+						y.hat = y.hat+A[[m]][[o]]%*%data[t-o,ex[iex],] 									}
 				}
-				y.p[t,ex[iex],1] = y.p[t,ex[iex],1]+pr[m]*y.hat ;
+				y.p[t,iex,] = y.p[t,iex,]+pr[t,m,iex]*y.hat ;
 			}
 		}	
 	}
-	return(y.p)
+	return(list(y.p=y.p,var.p=var.p,pr=pr))
 }

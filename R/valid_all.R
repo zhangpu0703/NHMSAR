@@ -1,5 +1,5 @@
 valid_all <-
-function(data,simu,root.filename=" ",path=NULL,title="",id=1,alpha=.05,save=FALSE,output=FALSE){
+function(data,simu,root.filename=" ",path=NULL,title="",id=1,alpha=.05,save=FALSE,output=FALSE,col="red",width=4,height=4){
 
 dev.new()
 T = dim(data)[1]
@@ -21,40 +21,43 @@ lines(sort(data[,,id]),IC[,1],lty=2)
 lines(sort(data[,,id]),IC[,2],lty=2)
 if (save) {
 	filename = paste(path,"qqplot-",root.filename,".eps",sep="")
-	dev.copy2eps(file=filename,width=4,height=4)
+	dev.copy2eps(file=filename,width=width,height=height)
 }
 dev.new()
 C = cor.MSAR(array(data[,,id],c(T,N.samples,1)),array(simu[,,id],c(T,N.sim,1)),lag=15)
 plot(0:14,C$C.data,typ="l",ylab="Correlation",xlab="Time (days)",lwd=2)
 title(title)
-lines(0:14,C$C.sim,col="red")
-lines(0:14,C$CI.sim[1,],col="red",lty=3)
-lines(0:14,C$CI.sim[2,],col="red",lty=3)
+lines(0:14,C$C.sim,col=col)
+lines(0:14,C$CI.sim[1,],col=col,lty=3)
+lines(0:14,C$CI.sim[2,],col=col,lty=3)
 if (save) {
 	filename = paste(path,"Cor-",root.filename,".eps",sep="")
-	dev.copy2eps(file=filename,width=4,height=4)
+	dev.copy2eps(file=filename,width=width,height=height)
 }
 dev.new()
 u = seq(min(data[,,id]),max(data[,,id]),length.out=20)
 gr.d = ENu_graph(data[,,id],u)
 u = seq(min(simu[,,id]),max(simu[,,id]),length.out=50)
-gr = ENu_graph(simu[,,id],u,add=TRUE,col=2,CI = TRUE,N.s.data=dim(data)[2])
+gr = ENu_graph(simu[,,id],u,add=TRUE,col=col,CI = TRUE,N.s.data=dim(data)[2])
 abline(v=.5,lty=2)
+title(title)
 if (save) {
 	filename = paste(path,"ENu-",root.filename,".eps",sep="")
-	dev.copy2eps(file=filename,width=4,height=4)
+	dev.copy2eps(file=filename,width=width,height=height)
 }
 dev.new()
-MDO = MeanDurOver(array(data[,,id],c(T,N.samples,1)),array(simu[,,id],c(T,N.sim,1)),u)
+MDO = MeanDurOver(array(data[,,id],c(T,N.samples,1)),array(simu[,,id],c(T,N.sim,1)),u,col=col)
+title(title)
 if (save) {
 	filename = paste(path,"MeanDurOver-",root.filename,".eps",sep="")
-	dev.copy2eps(file=filename,width=4,height=4)
+	dev.copy2eps(file=filename,width=width,height=height)
 }
 dev.new()
-MDU = MeanDurUnder(array(data[,,id],c(T,N.samples,1)),array(simu[,,id],c(T,N.sim,1)),u)
+MDU = MeanDurUnder(array(data[,,id],c(T,N.samples,1)),array(simu[,,id],c(T,N.sim,1)),u,col=col)
+title(title)
 if (save) {
 	filename = paste(path,"MeanDurUnder-",root.filename,".eps",sep="")
-	dev.copy2eps(file=filename,width=4,height=4)
+	dev.copy2eps(file=filename,width=width,height=height)
 }
 if (output) {return(list(qqp=qqp,C=C,ENu.data=gr.d,ENu.simu=gr,MDO=MDO,MDU=MDU ))}
 }

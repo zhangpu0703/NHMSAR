@@ -7,7 +7,7 @@ Plots empirical expected number of upcrossings of level u with respect to P(Y<u)
 Plots empirical expected number of upcrossings of level u with respect to P(Y<u) }\usage{
 ENu_graph(data, u, lty = 1, col = 1, add = FALSE, CI = FALSE, alpha = 0.05,
  N.s.data = NULL, xlab = "P(Y<u)", 
- ylab = "Number of upcrossings of level u per month", ylim = NULL)
+ ylab = "Intensity of upcrossings", ylim = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

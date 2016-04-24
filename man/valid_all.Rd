@@ -7,7 +7,7 @@ Statistics plotting for validation of MSAR models
 plots some functional statistics to help to valid  MSAR models: qqplot, covariance function, mean duration of sojourn over and under a threshold. For each of them the empirical statistic of the observed time series is plotted as well as the simulated one with \eqn{(1-\alpha)}-fluctuation intervals.}
 \usage{
 valid_all(data, simu, root.filename = " ", path = NULL, title = "", 
-  id = 1, alpha = 0.05, save = FALSE,output=FALSE)
+  id = 1, alpha = 0.05, save = FALSE,output=FALSE,col="red", width = 4, height = 4)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -30,6 +30,9 @@ root file name for saving plots}
 path of folder where to save the files}
   \item{output}{
 if TRUE some statistics are returned.  }
+\item{col}{color of the lines for simulated data, default is red}
+\item{width}{width of the figure when is it save by dev.copy2eps}
+\item{height}{height of the figure when is it save by dev.copy2eps}
 }
 
 \value{Returns plots and

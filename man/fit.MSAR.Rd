@@ -11,7 +11,7 @@ fit.MSAR(data, theta, MaxIter = 100, eps = 1e-05, verbose = FALSE,
    covar.emis = NULL, covar.trans = NULL, method = NULL, 
    constraints = FALSE, reduct=FALSE, K = NULL, d.y = NULL, 
    ARfix = FALSE,penalty=FALSE,sigma.diag=FALSE,
-   lambda1=.1,lambda2=.1,...)
+   lambda1=.1,lambda2=.1,a=3.7,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -46,12 +46,12 @@ dimension in each sites. For instance, if one considers only wind intensity than
 \item{ARfix}{if TRUE the AR parameters are not estimated, they stay fixed at their initial value.}
 \item{reduct}{if TRUE, autoregressive matrices and innovation covariance matrices are constrained to have the same pattern (zero and non zero coefficients) as the one of initial matrices.   }
 \item{sigma.diag}{if TRUE the estimated innovation covariances are diagonal}
-\item{penalty}{choice of the penalty for the autoregressive matrices. Possible values are ridge, lasso or SCAD (default). }
+\item{penalty}{choice of the penalty for the autoregressive matrices. Possible values are ridge (available for regression matrices only), lasso or SCAD (default). }
  \item{lambda1}{
-penalization constant for the precision matrices. It may be a scalar or a vector of length M (with M the number of regimes). If it is equal to0 no penalization is introduced for the precision matrices. }
+penalization constant for the precision matrices. It may be a scalar or a vector of length M (with M the number of regimes). If it is equal to 0 no penalization is introduced for the precision matrices. }
   \item{lambda2}{
 penalization constant for the autoregressive matrices. It may be a scalar or a vector of length M (with M the number of regimes). }
-
+\item{a}{fixed penalisation constant for SCAD penalty}
  \item{...}{other arguments}
 
 }
@@ -183,7 +183,7 @@ attributes(theta.init)
 #theta.nh$par.trans[3:4,1] = 0
 #theta.nh$par.trans[,2] = 2
 #Z = array(t(Democ[,2:T]),c(T,N.samples,1))
-#res.nh = fit.MSAR(Y,theta.nh,verbose=TRUE,MaxIter=200,covar.trans=)
+#res.nh = fit.MSAR(Y,theta.nh,verbose=TRUE,MaxIter=200,covar.trans=Z)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

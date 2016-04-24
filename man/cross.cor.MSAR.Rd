@@ -6,8 +6,9 @@ empirical cross-correlation for multivariate MSAR time series }
 \description{
 cross.cor.MSAR computes the cross-correlation between two components. The cross-corelation can be estimted for the whole time series or regime by regime. }
 \usage{
-cross.cor.MSAR(data, X=NULL, nc1 = 1, nc2 = 2, lag = 10, regime = 0, CI = FALSE, 
-  Bsim = 0, N.samples = 1, add = FALSE, col = 1, names = NULL, alpha = 0.1)
+cross.cor.MSAR(data, X=NULL, nc1 = 1, nc2 = 2, lag = 10, regime = 0, 
+CI = FALSE, Bsim = 0, N.samples = 1, add = FALSE, 
+col = 1, names = NULL, alpha = 0.1,ylab="Cross-Correlation")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -38,6 +39,8 @@ color of the line}
 list with the names of components of data}
   \item{alpha}{
 level for the computation of the fluctuation intervals. default=0.1}
+ \item{ylab}{
+legend for y axis}
 }
 \details{The cross-correlation functions are computed from one or several independent realizations of the same length.
 %%  ~~ If necessary, more details than the description above ~~

@@ -78,7 +78,12 @@ function(data,theta,FB,covar=NULL,verbose=FALSE)  {
 		  			wobs = cbind(obs[1:(T-order),],covar[1:(T-order),ex,]) * repmat(t(w),1,d*order+dim(covar)[3])
 		  			op[,,j] = op[,,j] + t(wobs) %*% cbind(obs[1:(T-order),],covar[1:(T-order),ex,])
           			wobs_1= obs[2:(T-order+1),] * repmat(t(w),1,d*order)
-          			tmp = apply(wobs,2,sum)
+          			if (is.na(sum(obs))) {
+            			wobs[is.na(wobs)] = 0
+            			wobs_1[is.na(wobs_1)] = 0
+            			obs[is.na(obs)] = 0
+            		}
+            		tmp = apply(wobs,2,sum)
           			m[,j] = m[,j] + tmp
            			m_1[,j] = m_1[,j] + apply(wobs_1, 2,sum)#
             		op_1[,,j] = op_1[,,j] + t(wobs) %*% obs[2:(T-order+1),]

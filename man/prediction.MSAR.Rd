@@ -23,7 +23,9 @@ numbers of samples for which prediction has to be computed}
 }
 
 \value{
-Returns the one step ahead prediction for each time of data time series
+Returns a list with the following elements:
+  \item{y.p}{the one step ahead prediction for each time of data time series}
+  \item{pr}{the prediction probabilities for each regime }
 }
 %\references{}
 \author{

@@ -7,7 +7,7 @@ Mean Duration of sojourn under a treshold
 Plot the mean duration of sojourn under thresholds for an observed time series and a simulated one with respect to teh empirical cumulative distribution function (cdf).  Confidence intervals are plotted too.}
 
 \usage{
-MeanDurUnder(data, data.sim, u, alpha = 0.05)
+MeanDurUnder(data, data.sim, u, alpha = 0.05,col="red")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,6 +20,7 @@ N.sim have to be  K*N.samples with K large enough (for instance, K=100) }
 vector of thresholds}
   \item{alpha}{
 1-confidence level for confidence intervals. Default = 0.05}
+\item{col}{color of the lines for simulated data, default is red}
 }
 
 \value{

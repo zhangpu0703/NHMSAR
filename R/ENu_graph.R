@@ -1,5 +1,5 @@
 ENu_graph <-
-function(data,u,lty=1,col=1,add=FALSE,CI=FALSE,alpha=0.05,N.s.data=NULL,xlab = "P(Y<u)",ylab="Number of upcrossings of level u per month",ylim=NULL){
+function(data,u,lty=1,col=1,add=FALSE,CI=FALSE,alpha=0.05,N.s.data=NULL,xlab = "P(Y<u)",ylab="Intensity of upcrossings",ylim=NULL){
 F = NULL
 T = dim(data)[1]
 N.samples = dim(data)[2]

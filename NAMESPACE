@@ -1,5 +1,7 @@
 #export(deplie2,ll_gausshn_p0.MSAR,ll_gausshn.MSAR,loglik_nh_inp,normalise,para_trans_inv,para_trans,plie2,repmat,init.theta.MSAR,fit.MSAR,Cond.prob.MSAR,cor.MSAR,deplie.VM,plie.c.VM)
-export(init.theta.MSAR,fit.MSAR,Cond.prob.MSAR,cor.MSAR,Estep.MSAR,forecast.prob.MSAR,MeanDurUnder,MeanDurOver,Mstep.classif,Mstep.hh.MSAR.with.constraints,Mstep.nh.MSAR,valid_all,Cond.prob.MSAR,cross.cor.MSAR,ENu_graph,Mstep.hh.MSAR,Mstep.nn.MSAR,Mstep.hn.MSAR,simule_MC,simule.nh.MSAR,simule.nh.MSAR.VM,regimes.plot.MSAR,prediction.MSAR,Estep.MSAR.VM,emisprob.MSAR.VM,log_dens_Von_Mises,fit.MSAR.VM,Mstep.hh.MSAR.VM,Mstep.nh.MSAR.VM,init.theta.MSAR.VM,test.model.MSAR,test.model.vect.MSAR,Mstep.hh.reduct.MSAR)
-
-import(ucminf,lars,caTools,SIS,glasso)
+export(init.theta.MSAR,fit.MSAR,Cond.prob.MSAR,cor.MSAR,Estep.MSAR,forecast.prob.MSAR,MeanDurUnder,MeanDurOver,Mstep.classif,Mstep.hh.MSAR.with.constraints,Mstep.nh.MSAR,valid_all,Cond.prob.MSAR,cross.cor.MSAR,ENu_graph,Mstep.hh.MSAR,Mstep.nn.MSAR,Mstep.hn.MSAR,simule_MC,simule.nh.MSAR,simule.nh.MSAR.VM,regimes.plot.MSAR,prediction.MSAR,Estep.MSAR.VM,emisprob.MSAR.VM,log_dens_Von_Mises,fit.MSAR.VM,Mstep.hh.MSAR.VM,Mstep.nh.MSAR.VM,init.theta.MSAR.VM,test.model.MSAR,test.model.vect.MSAR,Mstep.hh.reduct.MSAR,Mstep.hh.ridge.MSAR,Mstep.hh.SCAD.cw.MSAR,Mstep.hh.lasso.MSAR)
+ importFrom("grDevices", "dev.copy2eps", "dev.new", "gray")
+ importFrom("graphics", "abline", "grid", "lines", "plot", "polygon","title")
+ importFrom("stats", "acf", "cor", "kmeans", "lm", "optim", "pnorm","predict", "qqplot", "quantile", "rmultinom", "rnorm","runif", "sd", "var")
+import(ucminf,lars,caTools,SIS,glasso,ncvreg)
 

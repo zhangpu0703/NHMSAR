@@ -1,5 +1,5 @@
-Mstep.hh.MSAR <-
-function(data,theta,FB)  {  
+Mstep.hh.ridge.MSAR <-
+function(data,theta,FB,lambda=lambda)  {  
 	T=dim(data)[1]
 	N.samples = dim(as.array(data))[2] 
 	d = dim(as.array(data))[3]
@@ -16,7 +16,7 @@ function(data,theta,FB)  {
     		 cpt =cpt+1
     	}
     }
-
+        #browser()
     T = length(o:(dim(data)[1]-order+o))
 	exp_num_trans = 0
 	exp_num_visit = 0
@@ -26,27 +26,25 @@ function(data,theta,FB)  {
     op = array(0,c(d*order,d*order,M) ); op_1 = op ; op_2 = op_1 ;
 
 	for (ex in 1:N.samples) {
+		obs = array(data2[,,ex],c(d*order,T))
 		xit  = array(FB$probSS[,,,ex],c(M,M,T-2))
-		gamma = matrix(FB$probS[ex,(1:(T-1)),],T-1,M)
-
+		gamma = matrix(FB$probS[ex,1:(T-1),],T-1,M)
 		exp_num_trans = exp_num_trans+apply(xit,c(1,2),sum)
 		exp_num_visits1 = exp_num_visits1+gamma[1,]
 		postmix = postmix+apply(gamma,2,sum)
-		
-		obs = array(data2[,,ex],c(d*order,T))
-		obs = t(obs) 
-  	  
+		obs = t(obs)   
+		  
 		for (j in 1:M) {
 		   	w = matrix(gamma[,j], 1,T-1)
 		    wobs = obs[1:(T-1),] * repmat(t(w),1,d*order)
             wobs_1= obs[2:T,] * repmat(t(w),1,d*order)
-             if (is.na(sum(obs))) {
+            if (is.na(sum(obs))) {
             	wobs[is.na(wobs)] = 0
             	wobs_1[is.na(wobs_1)] = 0
             	obs[is.na(obs)] = 0
-            }           
-            m[,j] = m[,j] + apply(wobs,2,sum,na.rm=TRUE)
-            m_1[,j] = m_1[,j] + apply(wobs_1, 2,sum,na.rm=TRUE)
+            }            
+            m[,j] = m[,j] + apply(wobs,2,sum)
+            m_1[,j] = m_1[,j] + apply(wobs_1, 2,sum)
             op[,,j] = op[,,j] + t(wobs) %*% obs[1:(T-1),]
             op_1[,,j] = op_1[,,j] + t(wobs) %*% obs[2:T,]
             op_2[,,j] = op_2[,,j] + t(wobs_1) %*% obs[2:T,]
@@ -67,14 +65,13 @@ function(data,theta,FB)  {
 		   for (j in 1:M) { 
 			   Cxx = postmix[j]*op[,,j] - m[,j]%*%t(m[,j])
         	   Cxy = postmix[j]*op_1[,,j] - m[,j]%*%t(m_1[,j])
-        	   #if (d>1){if det(Cxx)<=0) {Cxx = Cxx+1e-4*diag(1,d)}}
-        	   A2tmp = t(Cxy)%*%solve(Cxx) 
+        	   A2tmp = t(Cxy)%*%solve(Cxx+lambda*diag(1,d)) 
         	   tmp = (m_1[,j]-(A2tmp)%*%m[,j])/postmix[j] 
         	   moy[j,1:d] = tmp[1:d] 
         	   op_1[,,j] = t(as.matrix(op_1[,,j]))
         	   tmp2 = (op_2[, , j] + (A2tmp) %*% op[, , j] %*% t(A2tmp) - 
                    ((A2tmp) %*% t(op_1[, , j]) + t((A2tmp) %*% t(op_1[, , j]))))/postmix[j] - tmp %*% t(tmp)
-               Sigma[1:d,1:d,j]=tmp2[1:d,1:d]#+(det(tmp2[1:d,1:d])==0)*1e-4*diag(1,4)
+               Sigma[1:d,1:d,j]=tmp2[1:d,1:d]
                for(kp in 1:order){
                	A2[j,kp,] = A2tmp[1:d,((kp-1)*d+1):(kp*d)]
                }

@@ -7,7 +7,7 @@ Mean Duration of sojourn over a treshold
 \description{
 Plot the mean duration of sojourn over thresholds for an observed time series and a simulated one with respect to the empirical cumulative distribution function. Fluctuation intervals are plotted too.}
 \usage{
-MeanDurOver(data, data.sim, u, alpha = 0.05)
+MeanDurOver(data, data.sim, u, alpha = 0.05,col="red")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,7 +18,8 @@ simulated time series, array of dimension T*N.sim*1.
 N.sim have to be  K*N.samples with K large enough (for instance, K=100) }
   \item{u}{vector of 
 thresholds}
-  \item{alpha}{1-confidence level for fluctuation intervals. Default = 0.05}}
+  \item{alpha}{1-confidence level for fluctuation intervals. Default = 0.05}
+\item{col}{color of the lines for simulated data}}
 
 \value{
 Returns a plot and a list including
