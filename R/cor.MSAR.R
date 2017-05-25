@@ -1,12 +1,12 @@
 cor.MSAR <-
-function(data,data.sim,lag=NULL,nc=1,alpha=.05,plot=FALSE,xlab="Time (days)") {
+function(data,data.sim,lag=NULL,nc=1,alpha=.05,plot=FALSE,xlab="Time (days)",dt=1) {
 	N.s = dim(data)[2]
 	N.sim = dim(data.sim)[2]
 	N = floor(N.sim/N.s)
 	if (is.null(lag)) {lag = floor(dim(data)[1]/2)}
 	C.data=matrix(0,lag,1)
 	for (ex in 1:dim(data)[2]) {
-		C = acf(data[,ex,nc], lag.max=lag-1,type = "correlation",plot=FALSE)
+		C = acf(data[,ex,nc], lag.max=lag-1,type = "correlation",plot=FALSE,na.action=na.pass)
 		C.data=C.data+c(C$acf)
 	}
 	C.data = C.data/N.s
@@ -22,12 +22,13 @@ function(data,data.sim,lag=NULL,nc=1,alpha=.05,plot=FALSE,xlab="Time (days)") {
 	for (l in 1:lag) {
 		IC[,l] = quantile(C.sim[l,],probs=c(alpha/2,1-alpha/2))
 	}
-	C.sim = apply(C.sim,1,mean)
+	C.sim.mean = apply(C.sim,1,mean)
 	if (plot) {
-		plot(0:(lag-1),C.data,typ="l",ylab="Correlation",xlab=xlab,lwd=2)
-		lines(0:(lag-1),C.sim,col="red")
-		lines(0:(lag-1),IC[1,],col="red",lty=3)
-		lines(0:(lag-1),IC[2,],col="red",lty=3)
+		plot((0:(lag-1))*dt,C.data,typ="l",ylab="Correlation",xlab=xlab,lwd=2)
+		lines((0:(lag-1))*dt,C.sim.mean,col="red",lwd=1.5)
+		lines((0:(lag-1))*dt,IC[1,],col="red",lty=3,lwd=1.5)
+		lines((0:(lag-1))*dt,IC[2,],col="red",lty=3,lwd=1.5)
+		grid()
 	}
 
 	return(list(C.data=C.data,C.sim=C.sim,CI.sim=IC,lags=0:(lag-1)))

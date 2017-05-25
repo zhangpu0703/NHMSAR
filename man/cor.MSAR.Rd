@@ -7,7 +7,8 @@ Empirical correlation functions comparison .}
 Empirical correlation function of observed data and simulated data are plotted on the same figure. A fluctuation interval of simulations is added to help the comparison. %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-cor.MSAR(data, data.sim, lag = NULL, nc = 1, alpha = 0.05,plot=FALSE,xlab="Time (days)")
+cor.MSAR(data, data.sim, lag = NULL, nc = 1, alpha = 0.05,
+plot=FALSE,xlab="Time (days)",dt=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,6 +26,7 @@ number of component for which to calculate the empirical auto-correlation functi
 confidence level for computation of the fluctuation interval. Default= 0.05.}
   \item{plot}{if plot is TRUE plots are drawn (default is FALSE).}
   \item{xlab}{x axis label}
+  	\item{dt}{default time step is equal to 1}
 }
 \details{The auto-correlation functions are computed from one or several independent realizations of the same length. 
 }
@@ -34,6 +36,7 @@ confidence level for computation of the fluctuation interval. Default= 0.05.}
 	\item{C.sim}{simulated data acf}
 	\item{CI.sim}{fluctuation interval for each lag}
 	\item{lags}{abscissa for acfs}
+
 }
 \references{
 Bessac, J., Ailliot, P., & Monbet, V. (2013). Gaussian linear state-space model for wind fields in the North-East Atlantic. arXiv preprint arXiv:1312.5530.}

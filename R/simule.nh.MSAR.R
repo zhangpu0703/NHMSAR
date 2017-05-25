@@ -9,7 +9,7 @@ d <- attributes(theta)$NbComp
 if (length(Y0[,1,1]) < order) {stop(paste("Length of Y0 should be equal to ",order,sep=""))}
 label = attributes(theta)$label
 
-L = 0
+L = 1
 Y = array(0,c(T,N.samples,d))
 S = matrix(0,T,N.samples)
 Y[1:max(order,1),,] = Y0[1:max(order,1),,]
@@ -52,9 +52,7 @@ if (substr(label,2,2) == "N") {
 
 d.c = length(nc)
 
-if(order>0){
-	A = theta$A
-	}
+if(order>0){ A = theta$A}
 	
 if (d>1) {
 		sq_sigma = list()
@@ -87,8 +85,10 @@ for (ex in 1:N.samples){
 	for (t in max(c(2,order+1,L+1)):(T)){
 		if (substr(label,1,1) == "N" & length(covar.trans)==1) {
 			if (is.null(link.ct)) {z = array(Y[t-L,ex,nc],c(1,1,d.c))}
-			else {z = link.ct(array(Y[t-L,ex,nc],c(1,1,d.c)))
-				z = matrix(z,1,length(z))}
+			else {
+				z = link.ct(array(Y[t-L,ex,nc],c(1,1,d.c)))
+				#z = matrix(z,1,length(z))
+			}
 			transition[,,t,ex] = nh_transitions(z,theta$par.trans,theta$transmat)
 		}
 		S[t,ex] = which.max(rmultinom(1, size = 1, prob = transition[S[t-1,ex], ,t,ex]))

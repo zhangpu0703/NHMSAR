@@ -7,7 +7,7 @@ Mean Duration of sojourn over a treshold
 \description{
 Plot the mean duration of sojourn over thresholds for an observed time series and a simulated one with respect to the empirical cumulative distribution function. Fluctuation intervals are plotted too.}
 \usage{
-MeanDurOver(data, data.sim, u, alpha = 0.05,col="red")
+MeanDurOver(data, data.sim, u, alpha = 0.05,col="red",plot=TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -19,7 +19,9 @@ N.sim have to be  K*N.samples with K large enough (for instance, K=100) }
   \item{u}{vector of 
 thresholds}
   \item{alpha}{1-confidence level for fluctuation intervals. Default = 0.05}
-\item{col}{color of the lines for simulated data}}
+\item{col}{color of the lines for simulated data}
+\item{plot}{statistic are plotted if TRUE (default)}
+}
 
 \value{
 Returns a plot and a list including
@@ -38,7 +40,7 @@ Valerie Monbet, valerie.monbet@univ-rennes1.fr}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{valid_all}
+\seealso{valid_all.MSAR, MeanDurUnder}
 \examples{
 data(meteo.data)
 data = array(meteo.data$temperature,c(31,41,1)) 

@@ -10,9 +10,9 @@ Nu = matrix(0,length(u),N.samples)
 CI.mat = matrix(0,length(u),2)
 
 for (iu in 1:length(u)) {
-	F[iu] = sum(data<u[iu])
+	F[iu] = sum(data<u[iu],na.rm=TRUE)
 	for (ex in 1:N.samples) {
-		Nu[iu,ex] = sum(data[1:(T-1),ex,1]>u[iu] & data[2:T,ex,1]<u[iu] )
+		Nu[iu,ex] = sum(data[1:(T-1),ex,1]>u[iu] & data[2:T,ex,1]<u[iu],na.rm=TRUE )
 	}
 	if (CI) {
 		tmp = matrix(Nu[iu,],N.s.data,N.samples/N.s.data)
@@ -29,8 +29,8 @@ if (add == FALSE) {
 else {lines(c(F,1),c(Nu1,0),lty=lty,col=col,lwd=3/2)}
 if (CI) {
 	CI.mat = CI.mat/N.s.data
-	lines(c(F,1),c(CI.mat[,1],0),lty=3,col=col)
-	lines(c(F,1),c(CI.mat[,2],0),lty=3,col=col)
+	lines(c(F,1),c(CI.mat[,1],0),lty=3,col=col,lwd=1.5)
+	lines(c(F,1),c(CI.mat[,2],0),lty=3,col=col,lwd=1.5)
 }
 list(u=u,F=F,Nu=Nu1,CI = CI.mat)
 }

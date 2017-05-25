@@ -27,7 +27,7 @@ function(data,theta,yrange=NULL,covar.emis=NULL,covar.trans=NULL){
 	for (ex in 1:N.samples){
 		for (o in (1:order)) {
 			for (m in 1:M) {
-				prob[,o,ex] = prob[,o,ex]+pdf.norm(matrix(yrange,1,lyr),theta$A0[m],matrix(theta$sigma[[m]]))*theta$prior[m]
+				prob[,o,ex] = prob[,o,ex]+pdf.norm(matrix(yrange,1,lyr),theta$A0[m],matrix(theta$sigma[[m]],d,d))*theta$prior[m]
 			}
 		   	y = yrange*prob[,o,ex]
 		   	Yhat[o,ex] = sum(diff(yrange)*(y[-length(y)]+y[-1])/2) # sam as trapz of matlab

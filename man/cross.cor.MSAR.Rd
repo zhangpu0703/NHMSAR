@@ -8,7 +8,7 @@ cross.cor.MSAR computes the cross-correlation between two components. The cross-
 \usage{
 cross.cor.MSAR(data, X=NULL, nc1 = 1, nc2 = 2, lag = 10, regime = 0, 
 CI = FALSE, Bsim = 0, N.samples = 1, add = FALSE, 
-col = 1, names = NULL, alpha = 0.1,ylab="Cross-Correlation")
+col = 1, names = NULL, alpha = 0.1,ylab="Cross-Correlation", dt = 1, ylim = c(-0.1, 1))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -31,6 +31,7 @@ If CI=TRUE fluctuation intervals are computed, default is FALSE}
 useful for computation of confidence intervals. When observed and simulated data are compared, one expects that the number of simulated time series is Bsim*N.samples }
   \item{N.samples}{
 useful for computation of confidence intervals. N.sample describes the number of independant time series in the observed (or reference) data }
+\item{dt}{default time step is equal to 1}
   \item{add}{
 if add=TRUE the empirical cross-correlation is added to the current plot.}
   \item{col}{
@@ -41,6 +42,8 @@ list with the names of components of data}
 level for the computation of the fluctuation intervals. default=0.1}
  \item{ylab}{
 legend for y axis}
+ \item{ylim}{
+limit for y axis}
 }
 \details{The cross-correlation functions are computed from one or several independent realizations of the same length.
 %%  ~~ If necessary, more details than the description above ~~

@@ -1,13 +1,14 @@
-\name{valid_all}
-\alias{valid_all}
+\name{valid_all.MSAR}
+\alias{valid_all.MSAR}
 \title{
 Statistics plotting for validation of MSAR models
 }
 \description{
 plots some functional statistics to help to valid  MSAR models: qqplot, covariance function, mean duration of sojourn over and under a threshold. For each of them the empirical statistic of the observed time series is plotted as well as the simulated one with \eqn{(1-\alpha)}-fluctuation intervals.}
 \usage{
-valid_all(data, simu, root.filename = " ", path = NULL, title = "", 
-  id = 1, alpha = 0.05, save = FALSE,output=FALSE,col="red", width = 4, height = 4)
+valid_all.MSAR(data,simu,title="",id=1,alpha=.05,spaghetti=TRUE,
+mfrow=NULL,save=FALSE,output=FALSE,
+root.filename=" ",path=NULL,col="red",width=4,height=4)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,8 +23,9 @@ title of plots}
 component to be considered when the data is multivariate (d>1). Default d=1.}
   \item{alpha}{
 level for the \eqn{(1-\alpha)}-fluctuation intervals}
- \item{save}{
-if save=TRUE plots are saved into .eps files}
+\item{spaghetti}{statistics of every simulation batch are plotted instead of fluctuation intervals. A batch is a simulation block of the same size as the observations. Default spaghetti=TRUE}
+ \item{mfrow}{if NULL, each plot is done in a new window}
+ \item{save}{if save=TRUE plots are saved into .eps files}
   \item{root.filename}{
 root file name for saving plots}
   \item{path}{
@@ -54,10 +56,8 @@ if TRUE some statistics are returned.  }
 Valerie Monbet, valerie.monbet@univ-rennes1.fr}
 
 
-
-
 \examples{
-	data(meteo.data)
+data(meteo.data)
 data = array(meteo.data$temperature,c(31,41,1)) 
 k = 40
 plot(data[,k,1],typ="l",xlab=("time (days)"),ylab=("temperature (degrees C)"))
@@ -75,8 +75,7 @@ Bsim = 10
 Ksim = Bsim*N.samples
 Y0 = array(data[1:2,sample(1:dim(data)[2],Ksim,replace=T),],c(2,Ksim,1))
 Y.sim = simule.nh.MSAR(mod.hh$theta,Y0 = Y0,T,N.samples = Ksim) 
-valid_all(data,Y.sim$Y)
-
+valid_all.MSAR(data,Y.sim$Y)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

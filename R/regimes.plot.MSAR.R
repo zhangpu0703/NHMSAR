@@ -12,7 +12,7 @@ function(res,data,ex=1,col.l="red",nc=1,ylim=NULL,xlab="time",ylab="series",d=NU
     d <- dim(data)[3]
 	if(is.null(d)|is.na(d)){d <- 1}
 	data = array(data,c(T,N.samples,d))
-	if (is.null(ylim)) {ylim = c(min(data[,ex,nc]),max(data[,ex,nc]))}
+	if (is.null(ylim)) {ylim = c(min(data[,ex,nc],na.rm=TRUE),max(data[,ex,nc],na.rm=TRUE))}
 	M = attributes(res$theta)$NbRegimes
 	col = rev(gray(1:max(M,5)/max(M,5)))
 	Reg = apply(res$smoothedprob[ex,,],1,which.max) 
