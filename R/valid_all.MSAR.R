@@ -27,6 +27,7 @@ if (spaghetti){
 		lines(s.data,approx(1:length(data[,,1]),IC[,2], n = lens)$y,lty=2,lwd=1.5)
 }
 
+# Correlations
 if (save) {
 	filename = paste(path,"qqplot-",root.filename,".eps",sep="")
 	dev.copy2eps(file=filename,width=width,height=height)
@@ -47,9 +48,15 @@ if (save) {
 	filename = paste(path,"Cor-",root.filename,".eps",sep="")
 	dev.copy2eps(file=filename,width=width,height=height)
 }
+
+# Upcrossings
 if (is.null(mfrow)) {dev.new()}
 u = seq(min(data[,,id],na.rm=TRUE),max(data[,,id],na.rm=TRUE),length.out=20)
 gr.d = ENu_graph(data[,,id],u)
+k=1
+u = seq(min(simu[,,id]),max(simu[,((k-1)*N.samples+1):(k*N.samples),id]),length.out=50)
+gr = ENu_graph(simu[,((k-1)*N.samples+1):(k*N.samples),id],u,add=TRUE,col="gray",CI = FALSE,N.s.data=dim(data)[2])
+gr.d = ENu_graph(data[,,id],u,ylim=c(range(gr.d$Nu,gr$Nu)))	
 if (spaghetti){
 	for (k in 1:Bsim){
 		u = seq(min(simu[,,id]),max(simu[,((k-1)*N.samples+1):(k*N.samples),id]),length.out=50)
